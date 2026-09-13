@@ -545,7 +545,8 @@ select{ cursor:pointer; appearance:none; background-image:url("data:image/svg+xm
 .bar-val{ font-family:var(--serif); font-size:1rem; font-weight:600; font-variant-numeric:tabular-nums; }
 .bar-track{ grid-column:1/-1; height:5px; background:var(--pergament-tam); border-radius:100px; overflow:hidden; }
 .bar-fill{
-  height:100%; width:0; border-radius:100px;
+  /* display:block je nuzan — <span> je inline pa bi inace ignorirao sirinu i visinu */
+  display:block; height:100%; width:0; border-radius:100px;
   background:linear-gradient(90deg,var(--rubrika),var(--zlato));
   transition:width .8s var(--prijelaz);
 }
