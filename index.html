@@ -1,0 +1,314 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Interaktivna karta mjesta tiskanja hrvatskih inkunabula — 96 bibliografskih zapisa, 18 tiskarskih središta, putovi primjeraka do hrvatskih ustanova.">
+<meta name="author" content="Lovre Marnika">
+<meta property="og:title" content="Incunabula Croatica — interaktivna karta">
+<meta property="og:description" content="Mjesta tiskanja hrvatskih inkunabula na karti Europe.">
+<meta property="og:type" content="website">
+<title>Hrvatske inkunabule — interaktivna karta</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,400&family=Inter:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="progress" id="progress" aria-hidden="true"></div>
+<a class="skip-link" href="#karta">Prijeđi na kartu</a>
+
+<nav class="nav" id="nav">
+  <a class="brand" href="#top">
+    <span class="brand-mark" aria-hidden="true">I</span>
+    <span class="brand-text">Incunabula<em>Croatica</em></span>
+  </a>
+  <div class="nav-links">
+    <a href="#karta">Karta</a>
+    <a href="#vrijeme">Vrijeme</a>
+    <a href="#zbirka">Zbirka</a>
+    <a href="#analiza">Analiza</a>
+    <a href="#metodologija">Metodologija</a>
+  </div>
+  <button id="tourBtn" class="tour-btn" type="button">
+    <span aria-hidden="true">▸</span> Vođeni obilazak
+  </button>
+</nav>
+
+<header class="hero" id="top">
+  <div class="hero-rule" aria-hidden="true"></div>
+  <div class="hero-text">
+    <p class="kicker">Hrvatske inkunabule i inkunabulistika</p>
+    <h1>Mjesta tiskanja<br><em>hrvatskih inkunabula</em></h1>
+    <p class="lead">
+      Interaktivni digitalno-humanistički prikaz bibliografskih podataka, geografije
+      ranoga tiska i primjeraka sačuvanih u hrvatskim ustanovama.
+    </p>
+    <div class="hero-actions">
+      <a href="#karta" class="button primary">Istraži kartu</a>
+      <a href="#zbirka" class="button ghost">Pregledaj zbirku</a>
+    </div>
+    <p class="hero-meta" id="heroMeta">—</p>
+  </div>
+  <div class="hero-visual" aria-hidden="true">
+    <div class="folio">
+      <div class="folio-inner">
+        <div class="folio-drop">I</div>
+        <div class="folio-number">1470 — 1501</div>
+        <div class="folio-line"></div>
+        <div class="folio-title">Incunabula<br>Croatica</div>
+        <div class="folio-small">prvih pedesetak godina europskoga tiska</div>
+        <div class="folio-rule"></div>
+        <div class="folio-colophon">Venetiis · Brixiae · Romae · Segniae</div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<section class="metrics-wrap" aria-label="Brojčani pregled zbirke">
+  <div class="metric"><span id="mTotal">–</span><small>bibliografskih zapisa</small></div>
+  <div class="metric"><span id="mPlaces">–</span><small>mjesta tiskanja</small></div>
+  <div class="metric"><span id="mPrinters">–</span><small>tiskara</small></div>
+  <div class="metric"><span id="mCopies">–</span><small>zabilježenih primjeraka</small></div>
+  <div class="metric accent"><span id="mDigital">–</span><small>provjerenih digitalnih poveznica</small></div>
+</section>
+
+<!-- ============================ KARTA ============================ -->
+<section class="section map-block" id="karta">
+  <div class="section-head">
+    <div>
+      <p class="kicker dark">Prostorni prikaz</p>
+      <h2>Interaktivna karta Europe</h2>
+    </div>
+    <p>
+      Veličina kruga odgovara broju izdanja tiskanih u tome gradu. Klik na grad
+      filtrira zbirku, a klik na naslov u popisu otvara cjeloviti zapis.
+    </p>
+  </div>
+
+  <div class="map-layout">
+    <div class="map-frame">
+      <div id="map" role="application" aria-label="Karta mjesta tiskanja"></div>
+
+      <div class="map-toolbar">
+        <button type="button" class="map-tool" id="toggleArcs" aria-pressed="false">
+          <span class="dot dot-arc" aria-hidden="true"></span> Putovi primjeraka
+        </button>
+        <button type="button" class="map-tool" id="toggleHolding" aria-pressed="false">
+          <span class="dot dot-hold" aria-hidden="true"></span> Mjesta čuvanja
+        </button>
+        <button type="button" class="map-tool" id="resetView">Vrati pogled</button>
+      </div>
+
+      <div class="map-legend" id="mapLegend">
+        <strong>Legenda</strong>
+        <span><i class="lg lg-print"></i> mjesto tiskanja</span>
+        <span><i class="lg lg-cro"></i> hrvatski tiskar u radionici</span>
+        <span><i class="lg lg-hold"></i> mjesto čuvanja primjerka</span>
+      </div>
+    </div>
+
+    <aside class="map-side" aria-label="Pretraživanje i filtri">
+      <div class="side-top">
+        <label for="search">Pretraži zbirku</label>
+        <input id="search" type="search" placeholder="Naslov, autor, tiskar, mjesto…" autocomplete="off">
+
+        <div class="filters">
+          <select id="placeFilter" aria-label="Mjesto tiskanja"><option value="">Mjesto tiskanja</option></select>
+          <select id="printerFilter" aria-label="Tiskar"><option value="">Tiskar</option></select>
+        </div>
+        <div class="filters">
+          <select id="holdingFilter" aria-label="Mjesto čuvanja"><option value="">Mjesto čuvanja</option></select>
+          <select id="tagFilter" aria-label="Posebne skupine">
+            <option value="">Skupina</option>
+            <option value="hrTiskar">Hrvatski tiskar</option>
+            <option value="hrAutor">Hrvatski autor</option>
+            <option value="hrJezik">Hrvatskojezična i glagoljska izdanja</option>
+            <option value="digital">Ima provjerenu digitalnu poveznicu</option>
+          </select>
+        </div>
+
+        <div class="year-filters">
+          <input id="yearFrom" type="number" inputmode="numeric" placeholder="Od godine" aria-label="Od godine">
+          <span class="year-dash" aria-hidden="true">–</span>
+          <input id="yearTo" type="number" inputmode="numeric" placeholder="Do godine" aria-label="Do godine">
+        </div>
+
+        <div class="side-actions">
+          <button id="resetFilters" class="tiny-btn" type="button">Poništi filtre</button>
+          <button id="exportBtn" class="tiny-btn" type="button">Preuzmi CSV</button>
+        </div>
+      </div>
+
+      <div class="side-summary">
+        <strong id="filterCount">–</strong><span>zapisa u prikazu</span>
+      </div>
+
+      <div id="activeChips" class="chips" aria-live="polite"></div>
+      <div id="placeList" class="place-list" role="list"></div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ VRIJEME ============================ -->
+<section class="section timeline-section" id="vrijeme">
+  <div class="section-head">
+    <div>
+      <p class="kicker dark">Vrijeme</p>
+      <h2>Raspon izdanja u zbirci</h2>
+    </div>
+    <p>Svaki stupac je jedna godina. Klik na stupac postavlja filtar na tu godinu, ponovni klik ga uklanja.</p>
+  </div>
+  <div id="timeline" class="timeline" role="group" aria-label="Broj izdanja po godinama"></div>
+  <div class="timeline-axis" id="timelineAxis" aria-hidden="true"></div>
+</section>
+
+<!-- ============================ ZBIRKA ============================ -->
+<section class="section" id="zbirka">
+  <div class="section-head">
+    <div>
+      <p class="kicker dark">Bibliografski zapisi</p>
+      <h2>Zbirka inkunabula</h2>
+    </div>
+    <p>Kartice prikazuju ključne podatke. Klik otvara cjeloviti zapis s popisom primjeraka i poveznicama.</p>
+  </div>
+
+  <div class="collection-toolbar">
+    <span id="collectionCount"></span>
+    <div class="sorts">
+      <label for="sortBy">Poredaj</label>
+      <select id="sortBy">
+        <option value="godina-asc">po godini, uzlazno</option>
+        <option value="godina-desc">po godini, silazno</option>
+        <option value="autor">po autoru</option>
+        <option value="naslov">po naslovu</option>
+        <option value="mjesto">po mjestu tiskanja</option>
+        <option value="primjerci">po broju primjeraka</option>
+      </select>
+    </div>
+  </div>
+
+  <div id="cards" class="cards"></div>
+  <div class="more-wrap"><button id="showMoreBtn" class="button ghost" type="button">Prikaži još</button></div>
+</section>
+
+<!-- ============================ ANALIZA ============================ -->
+<section class="section analysis-section" id="analiza">
+  <div class="section-head">
+    <div>
+      <p class="kicker dark">Pregled podataka</p>
+      <h2>Tko je tiskao i gdje</h2>
+    </div>
+    <p>Vrijednosti prate trenutačne filtre — suzite prikaz i stupci se mijenjaju s njim.</p>
+  </div>
+  <div class="analysis-grid">
+    <div class="analysis-card">
+      <h3>Najzastupljenija mjesta tiskanja</h3>
+      <div id="barsPlaces" class="bars"></div>
+    </div>
+    <div class="analysis-card">
+      <h3>Najzastupljeniji tiskari</h3>
+      <div id="barsPrinters" class="bars"></div>
+    </div>
+    <div class="analysis-card">
+      <h3>Gdje se primjerci danas čuvaju</h3>
+      <div id="barsHolding" class="bars"></div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ METODOLOGIJA ============================ -->
+<section class="section methodology" id="metodologija">
+  <div class="method-copy">
+    <p class="kicker dark">Metodologija</p>
+    <h2>Kako je prikaz izrađen</h2>
+    <p>
+      Polazišna bibliografska tablica sadrži devedeset i šest zapisa. Iz nje su
+      strojno uklonjene pogreške kodiranja hrvatskih dijakritika nastale pri
+      spremanju datoteke, a višestruke vrijednosti u jednoj ćeliji (više tiskara,
+      više ustanova) razdvojene su u zasebne podatke. Ustanova i mjesto čuvanja
+      povezani su u parove tako da svaki zabilježeni primjerak ima svoju ustanovu
+      i svoj grad.
+    </p>
+    <p>
+      Mjestima tiskanja i mjestima čuvanja pridružene su suvremene geografske
+      koordinate kako bi se mogli prikazati na karti. Izvorni bibliografski
+      elementi nisu mijenjani: autor, naslov, godina, tiskar, mjesto tiskanja,
+      ustanova i mjesto čuvanja preuzeti su onako kako stoje u tablici.
+    </p>
+    <p class="method-warning">
+      <strong>O digitalnim poveznicama.</strong> Stranica razlikuje dvije razine.
+      <em>Pretraga u katalozima</em> automatski je složen upit prema ISTC-u, GW-u,
+      digitalnoj zbirci NSK-a, Europeani, Internet Archiveu i Google Booksu — koristan
+      polazišni korak, ali ne i tvrdnja da digitalizirani primjerak postoji.
+      <em>Provjerena poveznica</em> upisuje se ručno u datoteku
+      <code>data/digitalizirano.js</code> tek nakon što je otvorena i potvrđena, i
+      samo se ona broji u pokazatelju digitaliziranih primjeraka. Time nijedan
+      podatak na stranici nije pretpostavljen.
+    </p>
+  </div>
+  <div class="method-notes">
+    <div><strong>Tehnologije</strong><span>HTML, CSS, JavaScript, Leaflet i OpenStreetMap / CARTO</span></div>
+    <div><strong>Podatkovni sloj</strong><span id="noteRecords">—</span></div>
+    <div><strong>Geokodiranje</strong><span id="noteGeo">—</span></div>
+    <div><strong>Napomene o građi</strong><span id="noteIssues">—</span></div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="footer-left">
+    <strong>Hrvatske inkunabule</strong>
+    <span>Interaktivni prikaz mjesta tiskanja · završni rad</span>
+  </div>
+  <div class="footer-right">
+    <span>Kartografska podloga © OpenStreetMap contributors, © CARTO</span>
+    <span>Bibliografski podaci iz priložene tablice <em>Incunabula Croatica</em></span>
+  </div>
+</footer>
+
+<!-- ============================ MODAL ============================ -->
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-shade" data-close="1"></div>
+  <article class="modal-card">
+    <button class="modal-x" id="modalClose" type="button" aria-label="Zatvori">×</button>
+    <div id="modalContent"></div>
+    <nav class="modal-nav">
+      <button type="button" id="modalPrev" class="tiny-btn">‹ Prethodni</button>
+      <span id="modalPos"></span>
+      <button type="button" id="modalNext" class="tiny-btn">Sljedeći ›</button>
+    </nav>
+  </article>
+</div>
+
+<!-- ============================ OBILAZAK ============================ -->
+<div id="tour" class="tour hidden" role="dialog" aria-modal="false" aria-labelledby="tourTitle">
+  <div class="tour-card">
+    <button class="tour-x" id="tourClose" type="button" aria-label="Zatvori obilazak">×</button>
+    <p class="tour-step" id="tourStep"></p>
+    <h3 id="tourTitle"></h3>
+    <p id="tourText"></p>
+    <div class="tour-nav">
+      <button type="button" id="tourPrev" class="tiny-btn">‹ Natrag</button>
+      <div class="tour-dots" id="tourDots"></div>
+      <button type="button" id="tourNext" class="button primary small">Dalje ›</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="data/zapisi.js"></script>
+<script src="data/mjesta.js"></script>
+<script src="data/postavke.js"></script>
+<script src="data/digitalizirano.js"></script>
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
