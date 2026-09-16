@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="hr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="description" content="Interaktivna karta mjesta tiskanja hrvatskih inkunabula — 96 bibliografskih zapisa i primjerci sačuvani u hrvatskim ustanovama.">
+<title>Hrvatske inkunabule</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<a class="skip-link" href="#karta">Prijeđi na kartu</a>
+
+<nav class="nav">
+  <a class="brand" href="#vrh">Hrvatske inkunabule</a>
+  <div class="nav-links">
+    <a href="#karta">Karta</a>
+    <a href="#vrijeme">Vrijeme</a>
+    <a href="#zbirka">Zbirka</a>
+    <a href="#analiza">Analiza</a>
+  </div>
+</nav>
+
+<header class="hero" id="vrh">
+  <h1>Mjesta tiskanja hrvatskih inkunabula</h1>
+  <p class="lead">
+    Interaktivni prikaz bibliografskih podataka, geografije ranoga tiska
+    i primjeraka sačuvanih u hrvatskim ustanovama.
+  </p>
+  <p class="hero-meta" id="heroMeta">&nbsp;</p>
+</header>
+
+<main>
+
+<section class="metrics" aria-label="Brojčani pregled zbirke">
+  <div class="metric"><span id="mTotal">–</span><small>bibliografskih zapisa</small></div>
+  <div class="metric"><span id="mPlaces">–</span><small>mjesta tiskanja</small></div>
+  <div class="metric"><span id="mPrinters">–</span><small>tiskara</small></div>
+  <div class="metric"><span id="mCopies">–</span><small>zabilježenih primjeraka</small></div>
+</section>
+
+<!-- ============================ KARTA ============================ -->
+<section class="section" id="karta">
+  <div class="section-head">
+    <h2>Interaktivna karta Europe</h2>
+    <p>
+      Veličina kruga odgovara broju izdanja tiskanih u tome gradu.
+      Klik na grad filtrira zbirku, a klik na naslov u popisu otvara cjeloviti zapis.
+    </p>
+  </div>
+
+  <div class="map-layout">
+    <div class="map-frame">
+      <div id="map" role="application" aria-label="Karta mjesta tiskanja"></div>
+
+      <div class="map-toolbar">
+        <button type="button" class="map-tool" id="toggleArcs" aria-pressed="false">
+          Putovi primjeraka
+        </button>
+        <button type="button" class="map-tool" id="toggleHolding" aria-pressed="false">
+          Mjesta čuvanja
+        </button>
+        <button type="button" class="map-tool" id="resetView">Vrati pogled</button>
+      </div>
+
+      <div class="map-legend">
+        <strong>Legenda</strong>
+        <span><i class="lg lg-print"></i> mjesto tiskanja</span>
+        <span><i class="lg lg-cro"></i> hrvatski tiskar u radionici</span>
+        <span><i class="lg lg-hold"></i> mjesto čuvanja primjerka</span>
+      </div>
+    </div>
+
+    <aside class="map-side" aria-label="Pretraživanje i filtri">
+      <div class="side-top">
+        <label for="search">Pretraži zbirku</label>
+        <input id="search" type="search" placeholder="Naslov, autor, tiskar, mjesto…" autocomplete="off">
+
+        <div class="filters">
+          <select id="placeFilter" aria-label="Mjesto tiskanja"><option value="">Mjesto tiskanja</option></select>
+          <select id="printerFilter" aria-label="Tiskar"><option value="">Tiskar</option></select>
+        </div>
+        <div class="filters">
+          <select id="holdingFilter" aria-label="Mjesto čuvanja"><option value="">Mjesto čuvanja</option></select>
+          <select id="tagFilter" aria-label="Posebne skupine">
+            <option value="">Skupina</option>
+            <option value="hrTiskar">Hrvatski tiskar</option>
+            <option value="hrAutor">Hrvatski autor</option>
+            <option value="hrJezik">Hrvatskojezična i glagoljska izdanja</option>
+            <option value="digital">Digitalizirano</option>
+          </select>
+        </div>
+
+        <div class="year-filters">
+          <input id="yearFrom" type="number" inputmode="numeric" placeholder="Od godine" aria-label="Od godine">
+          <span aria-hidden="true">–</span>
+          <input id="yearTo" type="number" inputmode="numeric" placeholder="Do godine" aria-label="Do godine">
+        </div>
+
+        <button id="resetFilters" class="tiny-btn" type="button">Poništi filtre</button>
+      </div>
+
+      <div class="side-summary">
+        <strong id="filterCount">–</strong><span>zapisa u prikazu</span>
+      </div>
+
+      <div id="activeChips" class="chips" aria-live="polite"></div>
+      <div id="placeList" class="place-list"></div>
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ VRIJEME ============================ -->
+<section class="section" id="vrijeme">
+  <div class="section-head">
+    <h2>Raspon izdanja u zbirci</h2>
+    <p>Svaki stupac je jedna godina. Klik na stupac postavlja filtar na tu godinu, ponovni klik ga uklanja.</p>
+  </div>
+  <div id="timeline" class="timeline" role="group" aria-label="Broj izdanja po godinama"></div>
+  <div class="timeline-axis" id="timelineAxis" aria-hidden="true"></div>
+</section>
+
+<!-- ============================ ZBIRKA ============================ -->
+<section class="section" id="zbirka">
+  <div class="section-head">
+    <h2>Zbirka inkunabula</h2>
+    <p>Zapisi su poredani po godini izdanja. Klik na karticu otvara cjeloviti zapis.</p>
+  </div>
+
+  <p id="collectionCount" class="collection-count"></p>
+  <div id="cards" class="cards"></div>
+  <div class="more-wrap"><button id="showMoreBtn" class="button" type="button">Prikaži još</button></div>
+</section>
+
+<!-- ============================ ANALIZA ============================ -->
+<section class="section" id="analiza">
+  <div class="section-head">
+    <h2>Tko je tiskao i gdje</h2>
+    <p>Vrijednosti prate trenutačne filtre — suzite prikaz i stupci se mijenjaju s njim.</p>
+  </div>
+  <div class="analysis-grid">
+    <div class="analysis-card">
+      <h3>Najzastupljenija mjesta tiskanja</h3>
+      <div id="barsPlaces" class="bars"></div>
+    </div>
+    <div class="analysis-card">
+      <h3>Najzastupljeniji tiskari</h3>
+      <div id="barsPrinters" class="bars"></div>
+    </div>
+    <div class="analysis-card">
+      <h3>Gdje se primjerci danas čuvaju</h3>
+      <div id="barsHolding" class="bars"></div>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <p><strong>Hrvatske inkunabule</strong> — interaktivni prikaz mjesta tiskanja</p>
+  <p>Kartografska podloga © OpenStreetMap contributors, © CARTO</p>
+</footer>
+
+<!-- ============================ PROZOR SA ZAPISOM ============================ -->
+<div id="modal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+  <div class="modal-shade" data-close="1"></div>
+  <article class="modal-card">
+    <button class="modal-x" id="modalClose" type="button" aria-label="Zatvori">×</button>
+    <div id="modalContent"></div>
+    <nav class="modal-nav">
+      <button type="button" id="modalPrev" class="tiny-btn">‹ Prethodni</button>
+      <span id="modalPos"></span>
+      <button type="button" id="modalNext" class="tiny-btn">Sljedeći ›</button>
+    </nav>
+  </article>
+</div>
+
+<script src="data/zapisi.js"></script>
+<script src="data/mjesta.js"></script>
+<script src="data/postavke.js"></script>
+<script src="data/digitalizirano.js"></script>
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
