@@ -1,11 +1,5 @@
-/* ==================================================================
-   HRVATSKE INKUNABULE — stilovi
-   ------------------------------------------------------------------
-   Gotovo sve boje i mjere skupljene su u odsječku :root na vrhu.
-   Promijenite vrijednost ondje i primijeni se na cijelu stranicu.
-   ================================================================== */
 
-/* ============ 1. VARIJABLE — ovdje mijenjajte izgled ============ */
+/*1. vaarijable*/
 :root{
   /* Boje */
   --pozadina:      #191d23;   /* osnovna pozadina stranice */
@@ -16,21 +10,23 @@
   --isticanje:     #8aa9c9;   /* poveznice, aktivna stanja, naglasci */
   --marker:        #5c7a99;   /* markeri mjesta tiskanja */
   --marker-hr:     #8a9a5b;   /* markeri gradova u kojima je radio hrvatski tiskar */
-  --put:           #6f8296;   /* linije od tiskare do mjesta cuvanja */
+    --put:           #3d5a7a;   /* linije od tiskare do mjesta čuvanja */
+  --karta-podloga: #e8e6e1;   /* boja koja se vidi dok se karta učitava */
+  --marker-cuvanje:#2b3440;   /* romb mjesta čuvanja, taman zbog svijetle karte */
   --obrub:         #333b45;
   --obrub-jaci:    #46505c;
   --na-markeru:    #eef1f4;   /* tekst na markeru */
 
-  /* Tipografija — jedna obitelj za tekst, mono za sve brojeve */
+  /* tipografija */
   --sans: "IBM Plex Sans", "Segoe UI", Arial, sans-serif;
   --mono: "IBM Plex Mono", Consolas, "Courier New", monospace;
 
-  /* Raspored */
+  /* raspored */
   --maks-sirina: 1180px;
   --visina-karte: 620px;   /* bočna ploča se ravna po ovoj visini */
 }
 
-/* ============ 2. OSNOVE ============ */
+/* 2. osnove  */
 *,*::before,*::after{ box-sizing:border-box; }
 html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
 body{
@@ -49,7 +45,7 @@ p{ margin:0 0 .9em; }
 ::selection{ background:var(--isticanje); color:var(--pozadina); }
 :focus-visible{ outline:2px solid var(--isticanje); outline-offset:2px; }
 
-/* Svaki broj na stranici ide u mono i s poravnatim znamenkama. */
+/* svaki broj na stranici ide u mono i s poravnatim znamenkama. */
 .broj{ font-family:var(--mono); font-variant-numeric:tabular-nums; }
 
 .skip-link{
@@ -58,7 +54,7 @@ p{ margin:0 0 .9em; }
 }
 .skip-link:focus{ left:.6rem; top:.6rem; }
 
-/* ============ 3. NAVIGACIJA ============ */
+/* 3. navigacija */
 .nav{
   position:sticky; top:0; z-index:1100;
   display:flex; align-items:center; justify-content:space-between;
@@ -72,7 +68,7 @@ p{ margin:0 0 .9em; }
 .nav-links a{ text-decoration:none; font-size:.88rem; color:var(--tekst-blijedi); }
 .nav-links a:hover{ color:var(--tekst); text-decoration:underline; }
 
-/* ============ 4. NASLOVNI DIO ============ */
+/* 4. naslovni dio  */
 .hero{
   scroll-margin-top:58px;
   max-width:var(--maks-sirina); margin:0 auto;
@@ -85,7 +81,7 @@ p{ margin:0 0 .9em; }
   padding-top:.9rem; border-top:1px solid var(--obrub); margin:0;
 }
 
-/* ============ 5. BROJČANI PREGLED ============ */
+/* %. brojčani pregled */
 .metrics{
   max-width:var(--maks-sirina);
   margin:0 auto clamp(1.8rem,4vw,3rem);
@@ -103,7 +99,7 @@ p{ margin:0 0 .9em; }
 }
 .metric small{ font-size:.78rem; color:var(--tekst-blijedi); line-height:1.3; }
 
-/* ============ 6. ODSJEČCI ============ */
+/* 6. osdsječci */
 /* scroll-margin-top drzi naslov ispod ljepljive navigacije kad se skoci na odsjecak */
 .section{
   scroll-margin-top:58px;
@@ -114,24 +110,26 @@ p{ margin:0 0 .9em; }
 .section-head h2{ font-size:1.3rem; margin-bottom:.35rem; }
 .section-head p{ color:var(--tekst-blijedi); font-size:.9rem; margin:0; max-width:52em; }
 
-/* ============ 7. KARTA ============ */
+/* 7. karta */
 .map-layout{ display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:1rem; align-items:start; }
 .map-frame{ position:relative; }
 #map{
   height:var(--visina-karte); width:100%;
-  background:var(--pozadina-2);
+    background:var(--karta-podloga);
   border:1px solid var(--obrub);
 }
-.leaflet-container{ font-family:var(--sans); background:var(--pozadina-2); }
+.leaflet-container{ font-family:var(--sans); background:var(--karta-podloga); }
+/* karta je svijetla, pa se boje malo smiruju da ne odvlače pogled s markera. */
+.leaflet-tile-pane{ filter:saturate(.72) brightness(1.03) contrast(.96); }
 .leaflet-control-zoom a{
   background:var(--ploca) !important; color:var(--tekst) !important;
   border-color:var(--obrub) !important;
 }
 .leaflet-control-zoom a:hover{ background:var(--pozadina-2) !important; }
 .leaflet-control-attribution{
-  background:rgba(25,29,35,.85) !important; font-size:10px !important; color:var(--tekst-blijedi) !important;
+  background:rgba(255,255,255,.85) !important; font-size:10px !important; color:#4a5259 !important;
 }
-.leaflet-control-attribution a{ color:var(--tekst-blijedi) !important; }
+.leaflet-control-attribution a{ color:#4a5259 !important; }
 
 /* markeri mjesta tiskanja */
 .pin{ background:none !important; border:none !important; }
@@ -150,7 +148,7 @@ p{ margin:0 0 .9em; }
 .pin-body.aktivan{ box-shadow:0 0 0 3px rgba(138,169,201,.5); }
 .pin-body.prigusen{ opacity:.3; }
 .pin-label{
-  /* Na malom zumu gradovi sjeverne Italije se preklapaju, pa se natpisi
+  /* na malom zumu gradovi sjeverne Italije se preklapaju, pa se natpisi
      pojavljuju tek od zuma 6 naviše (klasu postavlja script.js). */
   display:none;
   position:absolute; top:calc(100% + 4px); left:50%; transform:translateX(-50%);
@@ -166,7 +164,7 @@ p{ margin:0 0 .9em; }
 .hold-pin{ background:none !important; border:none !important; }
 .hold-body{
   width:100%; height:100%; transform:rotate(45deg);
-  background:var(--tekst); border:1px solid var(--pozadina); cursor:pointer;
+    background:var(--marker-cuvanje); border:1px solid #fff; cursor:pointer;
 }
 .hold-body:hover{ background:var(--isticanje); }
 
@@ -224,9 +222,9 @@ p{ margin:0 0 .9em; }
 .lg{ width:9px; height:9px; border-radius:50%; flex:none; }
 .lg-print{ background:var(--marker); }
 .lg-cro{ background:var(--marker-hr); }
-.lg-hold{ background:var(--tekst); border-radius:0; transform:rotate(45deg); }
+.lg-hold{ background:var(--marker-cuvanje); border-radius:0; transform:rotate(45deg); }
 
-/* ============ 8. BOČNA PLOČA ============ */
+/* 8. bočna ploča */
 .map-side{
   display:flex; flex-direction:column; min-height:0; height:var(--visina-karte);
   background:var(--pozadina-2); border:1px solid var(--obrub); overflow:hidden;
@@ -301,7 +299,7 @@ select option{ background:var(--pozadina); color:var(--tekst); }
 .pi em{ display:block; font-style:normal; font-size:.76rem; opacity:.75; }
 .empty-note{ padding:1.6rem 1rem; text-align:center; color:var(--tekst-blijedi); font-size:.88rem; }
 
-/* ============ 9. VREMENSKA CRTA ============ */
+/* 9. vremenska crta */
 .timeline{ display:flex; align-items:flex-end; gap:3px; height:160px; }
 .tl-bar{
   /* padding i obrub moraju biti nula: zadane vrijednosti koje preglednik daje
@@ -328,7 +326,7 @@ select option{ background:var(--pozadina); color:var(--tekst); }
   writing-mode:vertical-rl; height:2.4rem; margin:0 auto;
 }
 
-/* ============ 10. KARTICE ZBIRKE ============ */
+/* 10. kartice zbirke */
 .collection-count{ font-family:var(--mono); font-size:.82rem; color:var(--tekst-blijedi); margin-bottom:.9rem; }
 .cards{ display:grid; grid-template-columns:repeat(auto-fill,minmax(265px,1fr)); gap:.8rem; }
 .card{
@@ -366,7 +364,7 @@ select option{ background:var(--pozadina); color:var(--tekst); }
 }
 .button:hover{ border-color:var(--isticanje); color:var(--isticanje); }
 
-/* ============ 11. ANALIZA ============ */
+/* 11. analiza */
 .analysis-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:.8rem; }
 .analysis-card{ background:var(--ploca); border:1px solid var(--obrub); padding:1rem; }
 .analysis-card h3{
@@ -383,7 +381,7 @@ select option{ background:var(--pozadina); color:var(--tekst); }
   display:block; height:100%; width:0; background:var(--marker);
 }
 
-/* ============ 12. PODNOŽJE ============ */
+/* 12. podnožje */
 footer{
   margin-top:clamp(1.8rem,4vw,3rem);
   padding:1.4rem clamp(1rem,4vw,2rem);
@@ -393,7 +391,7 @@ footer{
 footer p{ margin:0 0 .25rem; }
 footer strong{ color:var(--tekst); font-weight:600; }
 
-/* ============ 13. PROZOR SA ZAPISOM ============ */
+/* 13. prozor sa zapisom */
 .modal{ position:fixed; inset:0; z-index:1500; display:grid; place-items:center; padding:1.2rem; }
 .modal.hidden{ display:none; }
 .modal-shade{ position:absolute; inset:0; background:rgba(12,15,19,.78); }
@@ -413,7 +411,7 @@ footer strong{ color:var(--tekst); font-weight:600; }
 .m-title{ font-size:1.35rem; font-weight:600; margin:0 0 .25rem; }
 .m-author{ font-size:.92rem; color:var(--tekst-blijedi); margin-bottom:1rem; }
 .m-tags{ display:flex; flex-wrap:wrap; gap:.25rem; margin-bottom:1rem; }
-/* Razmak umjesto pozadine ispod mreže: kad zadnji red nije popunjen,
+/* razmak umjesto pozadine ispod mreže: kad zadnji red nije popunjen,
    prazan prostor inače ostane obojan i izgleda kao prazna ćelija. */
 .m-grid{
   display:grid; grid-template-columns:repeat(auto-fit,minmax(150px,1fr)); gap:.5rem;
@@ -448,7 +446,7 @@ footer strong{ color:var(--tekst); font-weight:600; }
 .modal-nav .tiny-btn{ width:auto; margin-top:0; }
 #modalPos{ font-family:var(--mono); font-size:.78rem; color:var(--tekst-blijedi); }
 
-/* ============ 14. MANJI ZASLONI ============ */
+/* 14. mobiteli */
 @media (max-width:1000px){
   .map-layout{ grid-template-columns:1fr; }
   #map{ height:440px; }
@@ -471,7 +469,7 @@ footer strong{ color:var(--tekst); font-weight:600; }
   .timeline-axis div{ font-size:.55rem; }
 }
 
-/* ============ 15. SMANJENO KRETANJE I ISPIS ============ */
+/* 15. smanjeno kretanje i ispis */
 @media (prefers-reduced-motion:reduce){
   html{ scroll-behavior:auto; }
 }

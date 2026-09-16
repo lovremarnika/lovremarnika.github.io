@@ -1,6 +1,6 @@
-/* ==================================================================
+/*
    HRVATSKE INKUNABULE — logika stranice
-   ------------------------------------------------------------------
+   
    Datoteka je podijeljena na označena poglavlja:
      1.  Pomoćne funkcije
      2.  Priprema podataka
@@ -13,15 +13,15 @@
      9.  Brojčani pokazatelji
      10. Prozor sa zapisom
      11. Povezivanje sučelja
-   ================================================================== */
+   */
 (function () {
 "use strict";
 
-/* ============ 1. POMOĆNE FUNKCIJE ============ */
+// 1. POMOĆNE FUNKCIJE 
 var $  = function (s, k) { return (k || document).querySelector(s); };
 var $$ = function (s, k) { return Array.prototype.slice.call((k || document).querySelectorAll(s)); };
 
-/** Uklanja dijakritike da pretraga radi i bez kvačica. */
+// Uklanja dijakritike da pretraga radi i bez kvačica. 
 function bezKvacica(s) {
   return String(s || "")
     .normalize("NFD").replace(/[̀-ͯ]/g, "")
@@ -29,14 +29,14 @@ function bezKvacica(s) {
     .toLowerCase();
 }
 
-/** Sprječava da tekst iz podataka postane HTML. */
+// Sprječava da tekst iz podataka postane HTML. 
 function esc(s) {
   return String(s === null || s === undefined ? "" : s)
     .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
     .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
 }
 
-/** 1 zapis / 2 zapisa / 5 zapisa — hrvatska sklonidba uz broj. */
+// 1 zapis / 2 zapisa / 5 zapisa — hrvatska sklonidba uz broj. 
 function sklon(n, jed, dva, mnozina) {
   var d = n % 10, dd = n % 100;
   if (d === 1 && dd !== 11) return jed;
@@ -58,7 +58,7 @@ function poredajBroj(mapa) {
 
 var usporedi = function (a, b) { return String(a || "").localeCompare(String(b || ""), "hr"); };
 
-/* ============ 2. PRIPREMA PODATAKA ============ */
+// 2. PRIPREMA PODATAKA
 var ZAPISI         = window.ZAPISI || [];
 var MJ_TISAK       = window.MJESTA_TISKANJA || {};
 var MJ_CUVANJE     = window.MJESTA_CUVANJA || {};
@@ -92,7 +92,7 @@ ZAPISI.forEach(function (z) {
     z.primjerci.map(function (p) { return p.ustanova + " " + p.mjesto; }).join(" ")
   ].join(" "));
 
-  /* Ime pod kojim se zapis prikazuje: autor ako postoji, inače odrednica. */
+  // Ime pod kojim se zapis prikazuje: autor ako postoji, inače odrednica. 
   z.prikazAutor = z.autor || z.naziv || "";
 });
 
@@ -100,7 +100,7 @@ var godine = ZAPISI.map(function (z) { return z.godina; }).filter(Boolean);
 var GOD_MIN = Math.min.apply(null, godine);
 var GOD_MAX = Math.max.apply(null, godine);
 
-/* Zapisi bez koordinata ne mogu se prikazati na karti — javi to u konzoli. */
+// Zapisi bez koordinata ne mogu se prikazati na karti 
 var bezKoordinata = [];
 ZAPISI.forEach(function (z) {
   if (z.mjestoTiskanja && !MJ_TISAK[z.mjestoTiskanja] && bezKoordinata.indexOf(z.mjestoTiskanja) === -1) {
@@ -111,11 +111,11 @@ if (bezKoordinata.length) {
   console.warn("Nedostaju koordinate u data/mjesta.js za: " + bezKoordinata.join(", "));
 }
 
-/* ============ 3. KARTA ============ */
+// 3. KARTA 
 var POCETNI_POGLED = { centar: [46.6, 12.4], zum: 5 };
-var OKVIR = null;   /* okvir koji obuhvaća sva mjesta tiskanja */
+var OKVIR = null;   
 var karta, slojMjesta, slojCuvanja, slojPutova;
-var markeri = {};   /* naziv mjesta -> Leaflet marker */
+var markeri = {};   
 var maxPoMjestu = 1;
 
 function napraviKartu() {
@@ -124,36 +124,26 @@ function napraviKartu() {
     zoom: POCETNI_POGLED.zum,
     minZoom: 3,
     maxZoom: 12,
-    /* Djelomične razine zuma: bez njih Leaflet skače po cijelim brojevima
-       pa kadar ispadne osjetno širi nego što treba. */
     zoomSnap: 0.25,
     zoomDelta: 0.5,
     scrollWheelZoom: false
   });
   karta.attributionControl.setPrefix('<a href="https://leafletjs.com">Leaflet</a>');
 
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/dark_nolabels/{z}/{x}/{y}{r}.png", {
-    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    subdomains: "abcd"
-  }).addTo(karta);
-
-  /* Natpisi gradova idu u zasebnu ravninu, iznad podloge a ispod markera. */
-  karta.createPane("natpisi");
-  karta.getPane("natpisi").style.zIndex = 350;
-  karta.getPane("natpisi").style.pointerEvents = "none";
-  L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/dark_only_labels/{z}/{x}/{y}{r}.png", {
-    subdomains: "abcd", opacity: .7, pane: "natpisi"
+  L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>',
+    maxZoom: 19
   }).addTo(karta);
 
   slojPutova  = L.layerGroup().addTo(karta);
   slojCuvanja = L.layerGroup();
   slojMjesta  = L.layerGroup().addTo(karta);
 
-  /* Kotačić miša pomiče stranicu; zumira se tek nakon klika na kartu. */
+  
   karta.on("focus click", function () { karta.scrollWheelZoom.enable(); });
   karta.on("mouseout", function () { karta.scrollWheelZoom.disable(); });
 
-  /* Natpisi gradova pale se tek od zuma 6 naviše. */
+  
   function osvjeziRazinuDetalja() {
     karta.getContainer().classList.toggle("zoom-detalj", karta.getZoom() >= 6);
   }
@@ -298,7 +288,7 @@ function crtajPutove(zapisi) {
   });
 }
 
-/* ============ 4. STANJE FILTARA ============ */
+// 4. STANJE FILTERRA
 var stanje = {
   tekst: "", mjesto: "", tiskar: "", mjestoCuvanja: "", skupina: "",
   godOd: null, godDo: null, prikazano: 12
@@ -361,7 +351,7 @@ function osvjeziMarkere() {
   });
 }
 
-/* ============ 5. ISPIS BOČNOG POPISA ============ */
+// 5. ISPIS BOČNOG POPISA 
 function ispisiPopisMjesta() {
   var spremnik = $("#placeList");
   if (!trenutni.length) {
@@ -415,7 +405,7 @@ function ispisiPopisMjesta() {
   });
 }
 
-/* ============ 6. ISPIS KARTICA ============ */
+// 6. ISPIS KARTICA 
 function ispisiKartice() {
   var spremnik = $("#cards");
   var vidljivi = trenutni.slice(0, stanje.prikazano);
@@ -450,7 +440,7 @@ function ispisiKartice() {
   });
 }
 
-/* ============ 7. VREMENSKA CRTA ============ */
+// 7. VREMENSKA CRTA 
 function ispisiVremenskuCrtu() {
   var traka = $("#timeline"), os = $("#timelineAxis");
   var poGodini = prebroji(trenutni.map(function (z) { return z.godina; }));
@@ -480,7 +470,7 @@ function ispisiVremenskuCrtu() {
   });
 }
 
-/* ============ 8. ANALIZA ============ */
+// 8. ANALIZA 
 function ispisiStupce(spremnik, mapa, koliko) {
   var redci = poredajBroj(mapa).slice(0, koliko || 8);
   var maks = redci.length ? redci[0].broj : 1;
@@ -501,7 +491,7 @@ function ispisiAnalizu() {
   ispisiStupce($("#barsHolding"),  prebroji([].concat.apply([], trenutni.map(function (z) { return z.gradoviCuvanja; }))));
 }
 
-/* ============ 9. BROJČANI POKAZATELJI ============ */
+// 9. BROJČANI POKAZATELJI 
 function ispisiPokazatelje() {
   var mjesta     = Object.keys(prebroji(ZAPISI.map(function (z) { return z.mjestoTiskanja; })));
   var tiskari    = Object.keys(prebroji([].concat.apply([], ZAPISI.map(function (z) { return z.tiskari; }))));
@@ -518,7 +508,7 @@ function ispisiPokazatelje() {
     GOD_MIN + "–" + GOD_MAX + " · primjerci u " + gradova + " hrvatskih mjesta";
 }
 
-/* ============ 10. PROZOR SA ZAPISOM ============ */
+// 10. PROZOR SA ZAPISOM 
 var otvoreniId = null;
 
 function otvoriZapis(id) {
@@ -606,7 +596,7 @@ function pomakniZapis(smjer) {
   if (j >= 0 && j < trenutni.length) otvoriZapis(trenutni[j].id);
 }
 
-/* ============ 11. POVEZIVANJE SUČELJA ============ */
+// 11. POVEZIVANJE SUČELJA
 function napuniIzbornike() {
   function napuni(id, mapa, prazno) {
     $(id).innerHTML = '<option value="">' + prazno + "</option>" +
@@ -727,7 +717,7 @@ function otvoriIzAdrese() {
   }
 }
 
-/* ============ POKRETANJE ============ */
+// POKRETANJE 
 function pokreni() {
   if (!ZAPISI.length) {
     console.error("Podaci nisu učitani. Provjerite jesu li datoteke iz mape data/ dostupne.");

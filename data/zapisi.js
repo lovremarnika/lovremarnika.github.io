@@ -1,11 +1,4 @@
-/* ------------------------------------------------------------------
- * data/zapisi.js - bibliografski zapisi
- *
- * GENERIRANO iz data/incunabula-izvor.csv skriptom
- * tools/pripremi-podatke.py. Ako ovdje rucno mijenjate podatke,
- * ponovno pokretanje skripte pregazit ce vase izmjene - zato
- * ispravke radije unesite u CSV pa pokrenite skriptu iznova.
- * ------------------------------------------------------------------ */
+// prerađeni zapisi iz tablice 
 window.ZAPISI = [
   {"id": 1, "naziv": "Breviarium", "autor": "", "autorKomentara": [], "autorDodataka": [], "urednik": [], "prevoditelj": [], "ilustrator": [], "naslov": "Breviarium romanum", "godina": 1493, "tiskari": ["Torresanus, Andreas, de Asula", "Baromić, Blaž"], "mjestoTiskanja": "Venecija", "primjerci": [{"ustanova": "Nacionalna i sveučilišna knjižnica u Zagrebu", "mjesto": "Zagreb"}, {"ustanova": "Nacionalna i sveučilišna knjižnica u Zagrebu", "mjesto": "Zagreb"}], "napomena": ""},
   {"id": 2, "naziv": "Carcano, Michael de", "autor": "Carcano, Michele", "autorKomentara": [], "autorDodataka": [], "urednik": [], "prevoditelj": ["Blažiolović, Blaž"], "ilustrator": [], "naslov": "Spovid općena", "godina": 1496, "tiskari": ["Baromić, Blaž"], "mjestoTiskanja": "Senj", "primjerci": [{"ustanova": "Samostan sv. Franje ksaverskoga", "mjesto": "Zagreb"}], "napomena": ""},

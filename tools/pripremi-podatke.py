@@ -1,13 +1,12 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Pretvara data/incunabula-izvor.csv u data/zapisi.js
+Pretvorba data/incunabula-izvor.csv u data/zapisi.js
 
 Pokretanje (iz korijena projekta):
     python3 tools/pripremi-podatke.py
 
-Skripta NE dira data/mjesta.js, data/digitalizirano.js ni data/postavke.js -
-te datoteke uredjujete rucno i ostaju netaknute pri svakom novom generiranju.
+
 """
 import csv, json, os, re, sys
 
@@ -15,16 +14,15 @@ KORIJEN = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 ULAZ = os.path.join(KORIJEN, "data", "incunabula-izvor.csv")
 IZLAZ = os.path.join(KORIJEN, "data", "zapisi.js")
 
-# Tablica je izvorno spremljena u pogresnom kodnom rasporedu (CP1250 procitan
-# kao Latin-1), pa su hrvatski dijakritici djelomicno pokvareni. Ovo ih vraca.
+
 POPRAVCI = {
-    "æ": "ć",  # ae -> c s kvacicom
+    "æ": "ć",  
     "Æ": "Ć",
-    "è": "č",  # e s akcentom -> c s kvacicom
+    "è": "č",  
     "È": "Č",
-    "ð": "đ",  # eth -> d s crtom
+    "ð": "đ",  
     "Ð": "Đ",
-    " ": " ",       # tvrdi razmak
+    " ": " ",       
 }
 
 MALE_RIJECI = {"de", "di", "da", "del", "della", "von", "van", "der", "le", "la",

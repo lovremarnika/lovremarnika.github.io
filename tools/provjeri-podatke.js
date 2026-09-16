@@ -1,13 +1,4 @@
-/* ------------------------------------------------------------------
- * tools/provjeri-podatke.js — provjera podataka
- *
- * Pokretanje (iz korijena projekta):
- *     node tools/provjeri-podatke.js
- *
- * Javlja sve nesuglasice izmedju tablice i rucno uredjivanih datoteka:
- * ponovljene redne brojeve, gradove bez koordinata, nepovezane primjerke,
- * imena iz postavki koja se ni s cim ne poklapaju.
- * ------------------------------------------------------------------ */
+// provjera podataka
 global.window = {};
 require("../data/zapisi.js");
 require("../data/mjesta.js");
