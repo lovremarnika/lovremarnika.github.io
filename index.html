@@ -97,9 +97,11 @@
         </div>
 
         <div class="year-filters">
-          <input id="yearFrom" type="number" inputmode="numeric" placeholder="Od godine" aria-label="Od godine">
+                    <input id="yearFrom" type="number" inputmode="numeric" min="1470" max="1501" step="1"
+                 placeholder="Od godine" aria-label="Od godine">
           <span aria-hidden="true">–</span>
-          <input id="yearTo" type="number" inputmode="numeric" placeholder="Do godine" aria-label="Do godine">
+          <input id="yearTo" type="number" inputmode="numeric" min="1470" max="1501" step="1"
+                 placeholder="Do godine" aria-label="Do godine">
         </div>
 
         <button id="resetFilters" class="tiny-btn" type="button">Poništi filtre</button>

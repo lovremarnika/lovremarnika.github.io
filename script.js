@@ -206,8 +206,8 @@ function napraviKartu() {
 
 function ikonaMjesta(naziv, broj) {
   var d = broj ? 24 + 28 * Math.sqrt(broj / maxPoMjestu) : 18;
-  var hrv = ZAPISI.some(function (z) {
-    return z.mjestoTiskanja === naziv && (z.hrTiskar || naziv === "Senj");
+    var hrv = ZAPISI.some(function (z) {
+    return z.mjestoTiskanja === naziv && z.hrTiskar;
   });
   return L.divIcon({
     className: "pin",
@@ -604,6 +604,15 @@ function napuniIzbornike() {
         return '<option value="' + esc(r.kljuc) + '">' + esc(r.kljuc) + " (" + r.broj + ")</option>";
       }).join("");
   }
+    /* Raspon polja za godine dolazi iz samih podataka, pa ostaje točan
+     i ako se korpus proširi ili suzi. */
+  [$("#yearFrom"), $("#yearTo")].forEach(function (polje) {
+    polje.min = GOD_MIN;
+    polje.max = GOD_MAX;
+    polje.step = 1;
+  });
+  $("#yearFrom").placeholder = "Od " + GOD_MIN;
+  $("#yearTo").placeholder   = "Do " + GOD_MAX;
   napuni("#placeFilter",   prebroji(ZAPISI.map(function (z) { return z.mjestoTiskanja; })), "Mjesto tiskanja");
   napuni("#printerFilter", prebroji([].concat.apply([], ZAPISI.map(function (z) { return z.tiskari; }))), "Tiskar");
   napuni("#holdingFilter", prebroji([].concat.apply([], ZAPISI.map(function (z) { return z.gradoviCuvanja; }))), "Mjesto čuvanja");
